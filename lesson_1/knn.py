@@ -77,6 +77,7 @@ class KNNClassifier:
            with distances between each test and each train sample
         """
         print('one_loop')
+        return
 
 
     def compute_distances_no_loops(self, X):
