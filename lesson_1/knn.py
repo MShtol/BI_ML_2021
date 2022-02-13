@@ -13,7 +13,6 @@ class KNNClassifier:
     def fit(self, X, y):
         self.train_X = X
         self.train_y = y
-        print('fitted')
 
 
     def predict(self, X, n_loops=0):
@@ -55,7 +54,6 @@ class KNNClassifier:
         distances, np array (num_test_samples, num_train_samples) - array
            with distances between each test and each train sample
         """
-        print('two_loops')
         distances =  np.zeros((X.shape[0], self.train_X.shape[0]))
         for test_n in range(distances.shape[0]):
             for train_n in range(distances.shape[1]):
@@ -76,8 +74,11 @@ class KNNClassifier:
         distances, np array (num_test_samples, num_train_samples) - array
            with distances between each test and each train sample
         """
-        print('one_loop')
-        return
+        distances =  np.zeros((X.shape[0], self.train_X.shape[0]))
+        for n in range(X.shape[0]):
+            diff = self.train_X - X[n]
+            distances[n] = np.sum(abs(diff),axis = 1)
+        return distances
 
 
     def compute_distances_no_loops(self, X):
