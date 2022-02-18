@@ -32,7 +32,7 @@ class KNNClassifier:
         if n_loops == 0:
             distances = self.compute_distances_no_loops(X)
         elif n_loops == 1:
-            distances = self.compute_distances_one_loops(X)
+            distances = self.compute_distances_one_loop(X)
         else:
             distances = self.compute_distances_two_loops(X)
         
@@ -93,10 +93,9 @@ class KNNClassifier:
         distances, np array (num_test_samples, num_train_samples) - array
            with distances between each test and each train sample
         """
-        print('no_loops')
-        diff = self.train_X - X
-        distances = np.sum(abs(diff),axis = 1)
-        return diff
+        diff = X[:,None] -  self.train_X[None]
+        distances = np.sum(np.abs(diff), axis=2)
+        return distances
 
 
     def predict_labels_binary(self, distances):
@@ -113,12 +112,15 @@ class KNNClassifier:
 
         n_train = distances.shape[1]
         n_test = distances.shape[0]
-        prediction = np.zeros(n_test)
+        prediction = np.zeros(n_test, np.int)
 
-        """
-        YOUR CODE IS HERE
-        """
-        pass
+        for i, v in enumerate(distances):
+            min_el = np.unique(np.sort(v)[:self.k]) ## find k minimal elements and keep unique
+            indeces = (v[:, None] == min_el).argmax(axis=0) ## retrieving indeces of closest neighboors
+            neighboor_classes = self.train_y[indeces] ## retrieving classes of neighbors
+            unique, counts = np.unique(neighboor_classes, return_counts=True) ## counting of each class instances
+            prediction[i] = max(dict(zip(unique, counts))) ## assgning the most frequent class
+        return prediction
 
 
     def predict_labels_multiclass(self, distances):
@@ -137,7 +139,10 @@ class KNNClassifier:
         n_test = distances.shape[0]
         prediction = np.zeros(n_test, np.int)
 
-        """
-        YOUR CODE IS HERE
-        """
-        pass
+        for i, v in enumerate(distances):
+            min_el = np.unique(np.sort(v)[:self.k]) ## find k minimal elements and keep unique
+            indeces = (v[:, None] == min_el).argmax(axis=0) ## retrieving indeces of closest neighboors
+            neighboor_classes = self.train_y[indeces] ## retrieving classes of neighbors
+            unique, counts = np.unique(neighboor_classes, return_counts=True) ## counting of each class instances
+            prediction[i] = max(dict(zip(unique, counts))) ## assgning the most frequent class
+        return prediction
